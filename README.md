@@ -1,28 +1,28 @@
 # RKR-GST Algorithm
 #### Running Karp-Rabin Matching and Greedy String Tiling
-The algorithm described here was implemented following the psuedo-code in the paper Wise, Michael J, 
+The algorithm described here was implemented following the psuedo-code given in the paper by Wise, Michael J, 
 [Running Karp-Rabin Matching and Greedy String Tiling](http://sydney.edu.au/engineering/it/research/tr/tr463.pdf) in 
 Basser Department of Computer Science Technical Report Number 463 (March 1993) submitted to Software-Practice and 
 Experience.
 
-The algorithm answers the question, given two strings what is the degree of similarity between the strings? Consider
+The algorithm answers the question, given two strings what is the degree of similarity between them? Consider
 2 articles which are tokenized into lists. The process of tokenization is not covered here, and may include removing
-stop words, and other cleaning operations. Each word can be thought of as a tile in the list. The algorithm begins by
+stop words, and other cleaning operations. Each word can be thought of as a tile or token of the list. The algorithm begins by
 setting a initial search length, as well as a minimum match length. The first list is traversed in n-grams of 
-the initial search length. At each tiling of the text a hash is created and an entry made in the hash table. After the  
+the initial search length. At each tiling of the text a hash is created and an entry made in the hash table. After the 
 first list is covered, the second list is traversed. An n-gram is pulled from the second list, a hash created, and a 
-lookup done on the hash table. If a match is found the tiles in both lists are marked. At the end of the first pass at
-the initial search length, the search length is decreased and the process is repeated.
+lookup done on the hash table. If a match is found the tiles in both lists are marked, and the initial search length, 
+the search length is decreased and the process repeated.
 
 The algorithm is greedy. Consider the first pass through the second list. If there is a match with the first list then 
 the algorithm expands its search, and compares tiles beyond the search length. If there are additional matches the 
-maximal match length is incremented, and the tile will be marked as a match. The following will offer a more detailed 
+maximal match length is incremented, and the tile will be marked as part of the match. The following will offer a more detailed 
 view of the functions, classes, and process by which the algorithm arrives at a metric for the similarity between
 the 2 texts.
 
 # Example Strings for Comparison
 Below are 2 strings that will be used to describe the algorithm in detail. The first is a 17 word string and it
-is represented by the object mantok_t of the class ManageTokens(): 
+is represented by the object mantok_t (see below) of the class ManageTokens(): 
 
 - Early today Lamar and Patty reached a deal to fund subsidies that were to be ended quickly
 
@@ -31,9 +31,9 @@ by the object mantok_p. The string is 19 tokens long:
 
 - \[Early today Lamar and\] Barbara agreed that the \[subsidies that were to be ended quickly\] needed to be funded
  
-The repeated n-grams have been highlighted with brackets \[ \]. Splitting the strings and considering their lists then
-the first set of matching tiles appears at positions \[0, 3\]. The second set of repeated tiles appears at \[10, 16\] 
-in the the first string and at \[8, 14\] in the second.
+The repeated n-grams have been highlighted with brackets \[ \]. Splitting the strings and considering their lists
+the first set of matching tiles appear at t\[0:3\], where t is the tokenized first string. The second set of repeated 
+tiles appears at t\[10:16\] in the the first string and at p\[8:14\] in the second.
 
 # Module factory.py
 The module factory.py is the entry point for the algorithm, and initializes parameters and objects needed by the 
@@ -44,20 +44,21 @@ to 3, and the initial search size is set to 20.
 The minimal search length, as well as the maximum search length can be viewed as hyperparameters, "high-level" 
 properties of the algorithm fixed before the evaluation progress is begun. To determine these parameters requires 
 setting different values for them, examining results comparing texts, and coming to an understanding as to
-what values are "best". Throughout on-line searches 3, and 20 seemed to be common values.
+what values are "best". These seem to be common values, but have not been validated in this conetxt.
 
-The module creates instances of ManageTokens() to manage the token lists throughout the process. Then rkr_gst() is 
-called, which is the top level function for the algorithm. Upon return from rkr_gst() the results are used to 
-computes a metric for characterizing the overlap of n-grams.
+The module creates instances of ManageTokens() to manage the token lists throughout the process: mantok_t and mantok_p 
+to handle the strings t and p, respectively. Then rkr_gst() is called, which is the top level function for the 
+RKR-GST algorithm. Upon return from rkr_gst() the results are used to compute a metric for characterizing the overlap 
+of n-grams.
 
 ## Class ManageTokens(tokens)
 
 ### Attributes:
-1. tokens: A list of tokens and is case sensitive.
-2. length_of_tokens: The length of the list of tokens.
+1. tokens: A list of tokens and is case sensitive, either t or p.
+2. length_of_tokens: The length of the list of tokens. In the case of t this would be 17 and for p 19.
 3. is_marked: A list to keep track of whether a token has been marked or not. This is the same 
-length as the tokens list. Each token corresponds to a Boolean in is_marked: token[i] corresponds 
-is_marked\[i\] True or False.  
+length as the list of tokens. Each token corresponds to a Boolean in is_marked: token\[i\] corresponds 
+is_marked\[i\] and is True or False.  
 
 ### Methods:
 1. mark_token(self, idx): Set is_marked\[idx\] to True and return True.
