@@ -5,6 +5,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# User directories and files to ignore
+archive/
+*notes*.txt
+*test*.py
+
 # C extensions
 *.so
 

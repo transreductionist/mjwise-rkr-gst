@@ -1,26 +1,16 @@
-from rkr_gst_helpers.articles import strings
+from test_2_strings import str1
+from test_2_strings import str2
 from rkr_gst_helpers.rkr_gst import rkr_gst
 from rkr_gst_helpers.manage_tokens import ManageTokens
 import math
 import pickle
-import ipdb
 
-import matplotlib.pyplot as plt
-import numpy as np
 
-articles = pickle.load(open( "data_20170719.p", "rb" ))
+article_1 = [str.strip() for str in str1.split(' ') if str != '']
+article_2 = [str.strip() for str in str2.split(' ') if str != '']
 
-article_1 = articles[0]
-article_2 = articles[4]
-
-print article_1
-print ''
-print article_2
-print ''
-ipdb.set_trace()
-
-mininum_match_length = 3
-initial_search_size = 20
+mininum_match_length = 3  # default: 3
+initial_search_size = 8  # default: 20
 
 t_tokens = article_1
 p_tokens = article_2

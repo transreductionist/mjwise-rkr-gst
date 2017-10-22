@@ -1,23 +1,6 @@
 
 def mark_strings(mantok_t, mantok_p, maximal_matches):
 
-    # Starting with the top queue, while there is a non-empty queue
-    #     If the current queue is empty:
-    #         Drop to next queue: this corresponds to smaller maximal-matches
-    #     Else:
-    #         Remove match(p, t, L) from queue:
-    #         <Assume length of maximal-matches in current queue is L>
-    #     If match not occluded:
-    #         If for all j: 0, 1, 2, ... search_length - 1, p_tokens[p + j] == t_tokens[t + j]:
-    #             Match is not hash artifact
-    #             for j = 0 to L - 1:
-    #                 mark_token(p_tokens[p + j])
-    #                 mark_token(t_tokens[t + j])
-    #                 <The length_of_tokens_tiled = length_of_tokens_tiled + L>
-    #     Else L - L_occluded >= search_length then
-    #        <This is the unmarked part remaining of the maximal-match>
-    #        Replace unmarked portion on list of queues
-
     for maximal_match_length in maximal_matches.maximal_match_lengths:
         queue = maximal_matches.find(maximal_match_length)
         matches = queue.data

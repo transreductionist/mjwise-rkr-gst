@@ -24,4 +24,7 @@ def rkr_gst(mantok_t, mantok_p, minimum_match_length, initial_search_length):
                 search_length = minimum_match_length
             else:
                 stop = True
+
+            stop2 = 2
+
     debug = 1
