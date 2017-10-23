@@ -1,6 +1,7 @@
 # RKR-GST Algorithm
-#### Running Karp-Rabin Matching and Greedy String Tiling
-The algorithm described here was implemented following the psuedo-code given in the paper by Michael J. Wise, 
+## Running Karp-Rabin Matching and Greedy String Tiling
+The algorithm described here was implemented following the psuedo-code (see Appendix A) given in the paper by 
+Michael J. Wise,  
 [Running Karp-Rabin Matching and Greedy String Tiling](http://sydney.edu.au/engineering/it/research/tr/tr463.pdf) in 
 the Basser Department of Computer Science Technical Report Number 463 (March 1993), which was submitted to 
 Software-Practice and Experience.
