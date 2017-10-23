@@ -25,17 +25,26 @@ at a metric for the similarity between the 2 texts.
 Below are 2 strings that will be used to describe the algorithm in detail. The first is a 17 word string and it
 is represented by the object mantok_t (see below) of the class ManageTokens(): 
 
-- Early today Lamar and Patty reached a deal to fund subsidies that were to be ended quickly
+- T = Early today Lamar and Patty reached a deal to fund subsidies that were to be ended quickly
 
 The comparison string is a modification to include text that is not copied as well as text that is. It is represented 
 by the object mantok_p. The string is 19 tokens long:
 
-- \[Early today Lamar and\] Barbara agreed that the \[subsidies that were to be ended quickly\] needed to be funded
+- P = \[Early today Lamar and\] Barbara agreed that the \[subsidies that were to be ended quickly\] needed to be funded
  
 The repeated n-grams have been highlighted with brackets \[ \] in the second string. Split the first string into a 
 list and call it t. Split the second string into a list and call it p. The first set of matching tiles appear at 
 t\[0:3\] and p\[0:3\]. The second set of repeated tiles appears at t\[10:16\] in the the first list and at p\[8:14\] 
 in the second.
+
+# Definitions
+- Maximal-match: A substring P p starting at p matches a substring T t of starting at t. The match is assumed to be 
+as long as possible, i.e until there is  no matching element, or an end-of-string is encountered. It might also occur
+that one of the elements is found to be marked.
+- Tile: A permanent and unique association of a substring from P with a matching substring from T. In the process of 
+forming a tile, tokens of the two substrings are marked, and thereby become unavailable for further matches.
+- Minimum-match-length: is deﬁned such that maximal-matches below this length are ignored. The minimum-match-length 
+can be 1, but in general will be greater than this.
 
 # Function factory()
 The function factory() is the entry point for the algorithm, and initializes parameters and objects needed by the 
@@ -214,17 +223,17 @@ looking for a longer match, a maximal match length of 7 is found. This is the gr
 ### Pass Through First List of Tokens
 - Initialize the loop:
     - Looks for the next unmarked token: there are none.
-- Token list for traversal is at t\[0\]
+- Token list for traversal is initialized to t\[0\]:
     - The next marked token is none, and the distance_to_next_tile returns the length of the list. 
-    - Take the first 8 words and join them into a string
-    - From the string create a hash for t\[0:7\]
-    - The next unmarked token is at t\[1\]
-- Move to t\[1\] and then
+    - Take the first 8 words and join them into a string.
+    - From the string create a hash for t\[0:7\].
+    - The next unmarked token is at t\[1\].
+- Move to t\[1\] and then:
     - Next marked token is still none. It looks for next tile, and when it traverses the list and does not find one, 
     distance_to_next_tile returns the length of the list. 
-    - Take the next 8-gram starting at t\[1\] and creates a hash for t\[1:8\]
-    - The next unmarked tile is t\[2\]
-- And it moves like this, one word down the set of tiles mapping t\[n, n+7\] until it gets to t\[9:16\]
+    - Take the next 8-gram starting at t\[1\] and creates a hash for t\[1:8\].
+    - The next unmarked tile is t\[2\].
+- And it moves like this, one word down the set of tiles mapping t\[n, n+7\] until it gets to t\[9:16\].
 
 At this point we have moved through all the 8-grams of the first string, and since it was the first time through there 
 are no marked tokens going in or coming out. All the algorithm did was create hashses for all the 8-grams found in the
@@ -232,26 +241,26 @@ string. Now pass through the second string.
 
 ### Pass Through Second List of Tokens
 The algorithm is looking for matches, and in particular matches of 8 tokens. It might actually find longer matches
-then 8-tiles (not in this case) and it keeps track of this with the variable longest_maximal_match. It is initialized
-to zero to keep track of these longer matches. The loop through the second string looks a lot like the traversal
-of the first string. It comes in and looks for the next marked tile starting at t\[0\].
+then 8-tiles (not in this case) and it keeps track of this with the variable longest_maximal_match, which has been 
+initialized to zero to keep track of these longer matches. The loop through the second string looks a lot like the 
+traversal of the first string. It comes in and looks for the next unmarked tile starting at t\[0\].
 
 - Initialize the loop:
     - Looks for the next unmarked token: there are none. 
-- Token list for traversal is at p\[0\]
+- Token list for traversal is initialized to p\[0\]:
     - The next marked token is none, and the distance_to_next_tile returns the length of the list.
-    - Take the first 8 words and join them into a string
-    - From the string create a hash for p\[0:7\]
+    - Take the first 8 words and join them into a string.
+    - From the string create a hash for p\[0:7\].
     - Look for the hash, and it does not exists since there is no 8-gram match between our strings.
     - What is returned from the hash table is an empty list.
-    - The next unmarked token is at p\[1\]
-- Move to p\[1\] and then
+    - The next unmarked token is at p\[1\].
+- Move to p\[1\] and then:
     - Next marked token is still none. It looks for next tile, and when it traverses the list and does not find one, 
 distance_to_next_tile returns the length of the list.
-    - Take the next 8-gram starting at p\[1\] and creates a hash for p\[1:8\]
+    - Take the next 8-gram starting at p\[1\] and creates a hash for p\[1:8\].
     - Again look up the hash in the running hash table and there will be none for the 2 strings being considered.
     - What is returned from the hash table is an empty list.
-    - The next unmarked token is now p\[2\]
+    - The next unmarked token is now p\[2\].
 
 In this way the algorithm works its way through the string. There are no matches across the strings and at the end of 
 the traversing the second string the function scanpattern() returns to rkr_gst(). In rkr_gst() any strings that
@@ -264,10 +273,11 @@ The function rkr_gst() returns us to scanpattern() and in traversing the strings
  - The first match is at t\[0:3\] and p\[0:3\] with longest_maximal_match equal to 4.
  - The second match is at t\[10:16\] and p\[8:14\] with longest_maximal_match equal to 7. 
  
-When the first 4 tokens are found to match the algorithm continues to compare tiles. It finds a match at the fifth 
-tile, the sixth and the  seventh. When it gets to the eighth there is no longer a match. The seven tiles are saved 
-as a match, even though the initial search length was 4 tokens. This is the nature of the greedy string tiling. If 
-you are familiar with regular expressions you will have experience with this behavior.
+For the second match in the list, the first 4 tokens are found to be the same, and the algorithm continues to compare 
+tiles past t\[10:13\] and considers t\[10:14\]. It finds a match at this fifth tile, as well as the sixth and the
+seventh. When it gets to the eighth tile there is no longer a match. The seven tiles are saved as a match, even though 
+the initial search length was 4 tokens. This is the nature of the greedy string tiling. If you are familiar with 
+regular expressions you will have seen this behavior before.
 
 The function scanpattern() returns back to the rkr_gst() with the 2 sets of matching tiles. rkr_gst() calls 
 mark_strings() and these tiles get marked and persisted in:
@@ -282,33 +292,108 @@ first string with the minimum search length. The
     - Looks for the next unmarked token. Remember that therr was a match at t\[0:3\] and these tiles were marked after
     the last pass in scanpattern(). In that previous pass there were no matches and so the first unmarked tile was 
     none. Currently, the next unmarked tile is at t\[4\]. 
-- Token list for traversal is at t\[4\]
+- Token list for traversal is at t\[4\]:
     - The next marked token is at t\[10\] because, again, in the previous pass through scanpattern() a match was found 
 at t\[10:16\]. 
     - The distance to the next tile is (10+1)-4 or 7. This is greater than the search length of 3 and so there is work 
 to do.
-    - Take the first 3 words and join them into a string
-    - From the string create a hash for t\[4:6\]
-    - The next unmarked token is at t\[5\]
-- Move to t\[5\] and then
-    - Next marked token is t\[10]\].
+    - Take the first 3 words t\[4:6\] and join them into a string.
+    - From the string create a hash.
+    - The next unmarked token is at t\[5\].
+- Move to t\[5\] and then:
+    - Next marked token is t\[10\].
     - The distance to the next tile is (10+1)-5 or 6. This is greater than the search length of 3.
-    - Take the next 3-gram starting at t\[5\] and creates a hash for p\[5:7\]
-    - The next unmarked token is now t\[6\]
-- After creating hash for t\[6:8\] the algorithm processes t\[7:9\] and t\[8:10\], and ends up at t\[9\].
-    - Next marked token is t\[10]\].
+    - Take the next 3-gram starting at t\[5\] and create a hash for p\[5:7\].
+    - The next unmarked token is now t\[6\].
+- After creating the hash for t\[6:8\] the algorithm processes t\[7:9\], t\[8:10\], and ends up at t\[9\]:
+    - Next marked token is t\[10\].
     - The distance to the next tile is (10+1)-9 or 2. This is less than the search length of 3.
-    - The next unmarked token is now none because the tiles t\[10:16\] are marked from the match that was previously
-found there.
+    - Move to the next unmarked token.
+    - The next unmarked token is none because the tiles t\[10:16\] have been marked previously.
 
-At this point there are no more tiles to traverse and the second string must be parsed looking for matches with the
-search length 3. The process outlined is continued and there are no matches to find. scanpattern() returns to
-rkr_gst() with no matches and so no strings to mark. 
+At this point there are no more tiles to traverse, and the second string must be parsed looking for matches with the
+search length 3. The process outlined above is continued, and there are no matches to find. scanpattern() returns to
+rkr_gst() with no matches, and therefore no strings to mark. 
 
 The function rkr_gst() has completed its task and returns to factory(). The last 2 strings have been compared and
 matches stored in mantok_t. The last step is calculating the similarity metric. 
 
-# Appendix A
+# Appendix A: Psuedo Code
+
+The psuedo-code from the paper 
+[Running Karp-Rabin Matching and Greedy String Tiling](http://sydney.edu.au/engineering/it/research/tr/tr463.pdf)
+is provided here.
+
+## Function rkr_gst()
+The greedy string algorithm:
+
+```
+search-length s := initial-search-length
+stop := false
+Repeat
+    L max := scanpattern(s)  # L max is size of largest maximal-matches found in iteration.
+    if L max > 2 × s:
+        s := L max  # Very long string; don’t mark tiles but try again with larger s
+    else:
+        markstrings(s)  # Create tiles from matches takes from list of queues
+        if s > 2 × minimum_match_length:
+            s := s div 2
+        else if s > minimum_match_length:
+            s := minimum_match_length
+        else:
+            stop := true
+until stop
+```
+
+## Function scanpattern()
+The Running Karp-Rabin matching algorithm is:
+
+```
+Starting at the ﬁrst unmarked token of T, for each unmarked T t do
+    if distance to next tile ≤ s:
+        advance t to ﬁrst unmarked token after next tile  # Just for efﬁciency.
+    else:
+        create the KR hash-value for substring T t ...  T t + s - 1 
+        add to hashtable
+Starting at the ﬁrst unmarked token of P, for each unmarked P p do
+    if distance to next tile ≤ s:
+        advance p to ﬁrst unmarked token after next tile
+    else
+        create the KR hash-value for substring P p ... P p + s - 1
+        check hashtable for hash of KR hash-value
+        for each hash-table entry with equal hashed KR hash-value do
+            k: = s
+            while P p + k = T t + k AND unmarked(P p + k ) AND unmarked(T t + k ) do
+                k := k + 1  # Extend match until non-match or element marked.
+            if k > 2 × s:
+                return(k)  # Abandon scan. Will be restarted with s = k.
+            else:
+                record new maximal-match
+return(length of longest maximal-match)
+```
+
+## Function mark_strings():
+All matches must be tested element-by-element because just because 2 hash-values are the same does not guarantee
+that the corresponding matches are the same. It has been observed that KR-hashing fails rarely and so the checking is
+done here instead of in scanpattern, where it would normally reside, because it turns out to be far more efficient.
+
+```
+starting with the top queue, while there is a non-empty queue do
+    if the current queue is empty:
+        drop to next queue  # Corresponding to smaller maximal-matches
+    else:
+        remove match(p, t, L) from queue  # Assume the length of maximal-matches in the current queue is L.
+        if match not occluded:
+            if for all j: 0 . . . s - 1 ,P p + j = T t + j:  # Check that match is not hash artefact.
+                for j:= 0 to L - 1 do
+                    mark_token(P p + j )
+                    mark_token(T t + j )
+                    length_of_tokens_tiled := length_of_tokens_tiled + L
+            else if L – L occluded ≥ s:  # This is the unmarked part remaining of the maximal-match.
+                replace unmarked portion on list of queues
+```
+
+# Appendix B: Testing LinkedList()
 
 Here is an example for loading and testing functionality of the doubly linked list.
 
