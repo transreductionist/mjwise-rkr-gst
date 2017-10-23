@@ -73,29 +73,6 @@ class LinkedList(object):
         move_up(): From the root node will move up the linked list to the top node: get_prev().
         move_down(): From the root node will move down the list to the last node: get_next().
         load_initial_data(maximal_match_length, data): Used to load initial data for testing.
-
-    Example: 
-            mylist = LinkedList()
-            print ''
-            print 'Load initial data.'
-            print ''       
-            mylist.load_initial_data(2, '2')
-            mylist.load_initial_data(4, '4')
-            mylist.load_initial_data(6, '6')
-            mylist.load_initial_data(8, '8')
-            mylist.load_initial_data(10, '10')
-            maximal_match_length = 10
-            print 'Set root node: ', mylist.set_root(maximal_match_length)
-            print 'Move down    : '
-            mylist.move_down()
-            maximal_match_length = 2
-            print 'Set root node: ', mylist.set_root(maximal_match_length)
-            maximal_match_length = 7
-            print 'Add data (11): ', mylist.add(maximal_match_length, '7')
-            maximal_match_length = 2
-            print 'Set root node: ', mylist.set_root(maximal_match_length)
-            print 'Move up      : '
-            mylist.move_up()
     """
 
     def __init__(self, root=None):

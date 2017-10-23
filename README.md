@@ -56,7 +56,7 @@ use of scanpattern() that does the matching of tiles. When rkr_gst() returns, ma
 matched, i.e. marked tiles, and allow the computation of the similarity metric for characterizing the overlap of 
 n-grams.
 
-As mentioned there are several helper functions and classes. Briefly, 
+As mentioned, there are several helper functions and classes. Briefly, 
 - Class LinkedList(): Efficient data structure for maintaining the maximal matches.
 - Class ManageTokens(): Manages the list of tokens, specifically the marked, or matched tiles.
 - mark_strings(): A function that takes the linked list and marks the matched tokens, while handling occluded tiles.
@@ -80,19 +80,19 @@ is_marked\[i\] and is True or False.
 6. index_of_next_unmarked_token(self, idx): Given the index idx function returns the next unmarked 
 token.
 7. get_tile(self, i, j): This just returns a slice over the token list and is used for retrieving a 
-tile.
+tiling.
 
 
 # Function rkr_gst():
 
 Given the hyperparameters and data this module drives the algorithm and returns the results contained within the 
-ManageTokens() instantiated classes, e.g. mantok_t.is_marked.
+ManageTokens() instantiated classes, e.g. mantok_t.is_marked and mantok_p.is_marked.
 
 ### Arguments:
 1. mantok_t: This is an instance of ManageTokens() for the first tokenized text.
 2. mantok_p: This is an instance of ManageTokens() for the second tokenized text.
 3. mininum_match_length: As we look for n-grams, this will be the minimum size we consider.
-4. initial_search_size: The initial tile length for matching one slice of tokens to another.
+4. initial_search_size: The initial tiling length for matching one slice of tokens to another.
 
 The doubly-linked list is instantiated: maximal_matches = LinkedList()
 
@@ -106,14 +106,16 @@ Attributes:
 4. tiles
 
 Methods:
-1. get_next(self):
-2. set_next(self, next_node):
-3. get_prev(self):
-4. set_prev(self, prev_node):
-5. get_data(self):
-6. set_data(self, data):
-7. get_tiles(self):
-8. set_tiles(self, tiles):
+1. get_next(self): Gets the next node.
+2. set_next(self, next_node): Sets the next node.
+3. get_prev(self): Gets the previous node.
+4. set_prev(self, prev_node): Sets the previous node.
+5. get_data(self): Gets the tiles for the node.
+6. set_data(self, data): Sets the tiles on the node.
+7. get_tiles(self): Gets the tiles for the node.
+8. set_tiles(self, tiles): Sets the tiles on the node.
+
+TODO: self.tiles and self.data seem to be redundant attributes and need to be reconciled.
 
 #### class LinkedList(object):
 Attributes:
@@ -124,24 +126,25 @@ Attributes:
 
 Methods:
 Some of the later methods are used for testing.
-1. get_size(self):
-2. remove(self, maximal_match_length):
-3. find(self, maximal_match_length):
-4. add(self, maximal_match_length, data):
-5. set_root(self, maximal_match_length):
-6. move_to(self, maximal_match_length):
-7. move_down(self):
-8. move_up(self):
-9. load_initial_data(self, maximal_match_length, data):
+1. get_size(self): The size, number of nodes is set in the load_initial_data method. The load_initial_data method is
+used for testing the linked list.
+2. remove(self, maximal_match_length): Remove a node.
+3. find(self, maximal_match_length): Find and return the node with the maximal_match_length.
+4. add(self, maximal_match_length, data): Add a node.
+5. set_root(self, maximal_match_length): Set the root node to the node with maximal_match_length.
+6. move_to(self, maximal_match_length): Move to the node with maximal_match_length.
+7. move_down(self): A test method that moves_down from the current root node.
+8. move_up(self): A test method that moves_up from the current root node.
+9. load_initial_data(self, maximal_match_length, data): Test method to load data.
 
-A doubly linked list is used to maintain a list of nodes (class Node) that contain lists of string data. Each node is 
-associated with a maximal match length. The data for the node contains the match, and can be initialized with either a 
-string or a list of strings. The \_\_init\_\_() handles the creation of the list.
+A doubly linked list is used to maintain a list of nodes (class Node). Each node is associated with a maximal match 
+length. The data for the node contains a nested list of matching string data, each of length maximal match length. 
+The \_\_init\_\_() handles the creation of the list.
 
 Importantly, the root node is set to the last position data was added or updated, and each node has an 
-maximal_match_length attribute. The linked list keeps track of the current maximal match length to improve
-efficiency. Given you are at a specific maximal match length, the next maximal match length it is more likely that
-the next will be nearby.
+maximal match length attribute. The linked list keeps track of the current maximal match length to improve
+efficiency. Given you are at a specific maximal match length, the next maximal match length is more than likely to be 
+nearby.
 
 # Function scanpattern():
 
@@ -153,7 +156,7 @@ This module compares 2 lists of tokens, and given an initial search size returns
 3. search_length: The length to begin the greedy tiling with.
 
 ### Returns:
-1. maximal_matches: A doubly linked list.
+1. maximal_matches: A doubly linked list of all the matches.
 
 # Class RKRHashtable()
 
@@ -161,18 +164,19 @@ This module compares 2 lists of tokens, and given an initial search size returns
 1. add(self, hash, data): Adds a key-value pair to the running hash table.
 2. get(self, hash): Gets a value from a given key.
 3. clear(self): Clears all key-value pairs from the dictionary.
-4. create_hash_value(self, substring): This is the running hash table. It takes a substring and then loops over each 
-character creating a hash for the substring. It does this by summing the ordinal value of each character. For example, 
-ord('a') returns the integer 97. Importantly, on each iteration the previous hash value is bitwise shifted left by 
-one 1 bit, which is a bijective component.
+4. create_hash_value(self, substring): It takes a substring and loops over each character creating a hash.
 
 
 ### Hash functions:
+The hash is created summing the ordinal value of each character. For example, ord('a') returns the integer 97. 
+Importantly, on each iteration the previous hash value is bitwise shifted left by one 1 bit.
+
 Why the leftwise bit shift? The following is taken from a post about building 
 [hash functions.](http://ticki.github.io/blog/designing-a-good-non-cryptographic-hash-function/)
 
-The basic building blocks of good hash functions are difussions. A Difussion can be thought of as bijective (i.e. 
-every input has one and only one output, and vice versa) hash functions, namely that input and output are uncorrelated.
+The basic building blocks of good hash functions are difussions. A Difussion can be thought of as bijective hash 
+functions, namely that input and output are uncorrelated. A bijective function is such that every input has one and 
+only one output, and vice versa. 
 
 Diffusions are often built using smaller, bijective components, which are called "subdiffusions". One must distinguish 
 between the different kinds of subdiffusions. The first class to consider is the bitwise subdiffusions. These are 
@@ -186,9 +190,9 @@ the original value. Another similar often used subdiffusion in the same class is
 
 # RKR-GST by the Line
 
-The minimum search length is set to 3, and the maximum initial search size is 8. With this initial search size and the 
-2 test strings given at the beginning of the document the first pass through the algorithm will find no matches. The
-first string is 17 tokens long:
+For the test case the minimum search length is set to 3, and the maximum initial search size is 8. With this initial 
+search size and the 2 test strings given at the beginning of the document the first pass through the algorithm will 
+find no matches. The first string is 17 tokens long:
 
 - Early today Lamar and Patty reached a deal to fund subsidies that were to be ended quickly
 - t = \[Early, today, Lamar, and, Patty, reached, a, deal, to, fund, subsidies, that, were, to, be, ended, quickly\]
@@ -207,7 +211,7 @@ The second path through decreases the search length to 4, and here there are 2 m
 4 tiles at the beginning. The second pass through finds a match of 4 tiles towards the end, but expanding the tiling 
 looking for a longer match, a maximal match length of 7 is found. This is the greedy nature of the algorithm.
 
-###Pass Through First List of Tokens
+### Pass Through First List of Tokens
 - Initialize the loop:
     - Looks for the next unmarked token: there are none.
 - Token list for traversal is at t\[0\]
@@ -226,6 +230,7 @@ At this point we have moved through all the 8-grams of the first string, and sin
 are no marked tokens going in or coming out. All the algorithm did was create hashses for all the 8-grams found in the
 string. Now pass through the second string.
 
+### Pass Through Second List of Tokens
 The algorithm is looking for matches, and in particular matches of 8 tokens. It might actually find longer matches
 then 8-tiles (not in this case) and it keeps track of this with the variable longest_maximal_match. It is initialized
 to zero to keep track of these longer matches. The loop through the second string looks a lot like the traversal
@@ -252,6 +257,7 @@ In this way the algorithm works its way through the string. There are no matches
 the traversing the second string the function scanpattern() returns to rkr_gst(). In rkr_gst() any strings that
 were found are marked. In the first pass through in this case there were none found. 
 
+### Decrease the Search Length in Half
 The search length is shortened from 8 tiles to 4. You might be wondering why we didn't drop the search length to 7. The
 algorithm is greedy and as it searches for matches across 4 tokens, if it finds longer ones it will handle those.
 The function rkr_gst() returns us to scanpattern() and in traversing the strings there are 2 matches:
@@ -268,6 +274,7 @@ mark_strings() and these tiles get marked and persisted in:
 - mantok_t.is_marked = \[True, True, True, True, False, False, False, False, False, False, True, True, True, True, True, True, True\]
 - mantok_p.is_marked = \[True, True, True, True, False, False, False, False, True, True, True, True, True, True, True, False, False, False, False\]
 
+### Search Length set to Minimum Length
 The search length is decreased to 3, its minimum value, and rk_gst() calls scanpattern(). Consider the traversal of the 
 first string with the minimum search length. The 
 
