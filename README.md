@@ -1,4 +1,4 @@
-## NOTE: Here is a repository that implements the Running Karp-Rabin Matching and Greedy String Tiling algorithm in Python. This is the primary algorithm that is used to detect plagiarism in an NLP application. This ended up being used on the Heroku site that had the application to manage the data.
+### NOTE: Here is a repository that implements the Running Karp-Rabin Matching and Greedy String Tiling algorithm in Python. This is the primary algorithm that is used to detect plagiarism in an NLP application. This ended up being used on the Heroku site that had the application to manage the data.
 
 # RKR-GST Algorithm
 ## Running Karp-Rabin Matching and Greedy String Tiling
