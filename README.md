@@ -1,3 +1,5 @@
+## NOTE: Here is a repository that implements the Running Karp-Rabin Matching and Greedy String Tiling algorithm in Python. This ended up being used on the Heroku site that had the application to manage the data.
+
 # RKR-GST Algorithm
 ## Running Karp-Rabin Matching and Greedy String Tiling
 The algorithm described here was implemented following the psuedo-code (see Appendix A) given in the paper by 
